@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf8">
+<title>HARCS</title>
+<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet"> 
+<style>
+html {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 18px;
+    font-family: 'Source Code Pro', monospace;
+    background-color: black;
+    color: white;
+}
+pre {
+  width: 900px;
+  height: 700px;
+  overflow-y: scroll;
+}
+input {
+    border: none;
+    outline: none;
+    width: 480px;
+    background-color: black;
+    color: white;
+    font-size: 18px;
+    font-family: 'Source Code Pro', monospace;
+}
+span {
+    font-size: 18px;
+}
+</style>
+<div>
+<pre>
+</pre>
+<span>&nbsp;&nbsp;&nbsp;HARCS>> </span><input>
+</div>
+<script>
+let output = document.querySelector('pre');
+let input = document.querySelector('input');
+
+output.textContent = '';
+input.focus();
+
+
+let worker = new Worker('harcs-worker.js');
+
+worker.addEventListener('message', e => {
+    if (~e.data.indexOf('__url_')) {
+        window.open(e.data.slice(6), '_blank');
+    }
+    else {
+        output.textContent += e.data + '\n';
+        output.scrollTop = output.scrollHeight;
+    }
+});
+
+input.addEventListener('keydown', e => {
+    if (e.keyCode == 13) {
+        worker.postMessage(e.target.value);
+        input.value = '';
+    }
+});
+</script>
